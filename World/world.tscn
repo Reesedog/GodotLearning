@@ -1,0 +1,10 @@
+[gd_scene load_steps=2 format=3 uid="uid://p40ksbe03h3l"]
+
+[ext_resource type="PackedScene" uid="uid://pdswy5ckwy2v" path="res://Player/Player.tscn" id="1_50rs0"]
+
+[node name="World" type="Node2D"]
+
+[node name="Map" type="Sprite2D" parent="."]
+
+[node name="Player" parent="." instance=ExtResource("1_50rs0")]
+motion_mode = 1
