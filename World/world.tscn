@@ -1,8 +1,9 @@
-[gd_scene load_steps=4 format=3 uid="uid://yfp17v8o8ro2"]
+[gd_scene load_steps=5 format=3 uid="uid://yfp17v8o8ro2"]
 
 [ext_resource type="Texture2D" uid="uid://broqi4jj8wtp4" path="res://Textures/reverse.png" id="1_0lbyx"]
-[ext_resource type="PackedScene" uid="uid://pdswy5ckwy2v" path="res://player/Player.tscn" id="2_4iyqv"]
+[ext_resource type="PackedScene" uid="uid://pdswy5ckwy2v" path="res://Player/Player.tscn" id="2_4iyqv"]
 [ext_resource type="PackedScene" uid="uid://c8g605k7kie0u" path="res://Util/enemy_spawner.tscn" id="3_i87m7"]
+[ext_resource type="PackedScene" uid="uid://db5p8oi81qfhn" path="res://Objects/experience_gem.tscn" id="4_57saj"]
 
 [node name="World" type="Node2D"]
 
@@ -17,3 +18,9 @@ region_rect = Rect2(0, 0, 4000, 4000)
 [node name="Player" parent="." instance=ExtResource("2_4iyqv")]
 
 [node name="EnemySpawner" parent="." instance=ExtResource("3_i87m7")]
+
+[node name="Loot" type="Node2D" parent="." groups=["loot"]]
+
+[node name="ExperienceGem" parent="Loot" instance=ExtResource("4_57saj")]
+position = Vector2(34, 2)
+experience = 20

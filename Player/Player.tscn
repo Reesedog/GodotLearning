@@ -1,8 +1,12 @@
-[gd_scene load_steps=7 format=3 uid="uid://pdswy5ckwy2v"]
+[gd_scene load_steps=14 format=3 uid="uid://pdswy5ckwy2v"]
 
-[ext_resource type="Script" path="res://player/player.gd" id="1_lm17y"]
+[ext_resource type="Script" path="res://Player/player.gd" id="1_lm17y"]
 [ext_resource type="Texture2D" uid="uid://snemnwtkwrd4" path="res://Textures/player/wanjia_reverse.png" id="2_vlc2l"]
 [ext_resource type="PackedScene" uid="uid://ouvxo1o70da4" path="res://Util/hurtbox.tscn" id="2_y4t0e"]
+[ext_resource type="Texture2D" uid="uid://bxejbd5g78mi7" path="res://Textures/GUI/exp_background.png" id="4_1hkix"]
+[ext_resource type="Texture2D" uid="uid://d1rlfncuijq80" path="res://Textures/GUI/exp_progress.png" id="5_q3hue"]
+[ext_resource type="FontFile" uid="uid://bobwylsccb8jg" path="res://Font/tenderness.otf" id="6_rhnh7"]
+[ext_resource type="AudioStream" uid="uid://crygubgleq4b5" path="res://Audio/SoundEffect/levelup.ogg" id="7_0640v"]
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_h675x"]
 radius = 7.0
@@ -14,11 +18,19 @@ size = Vector2(17, 34.5)
 [sub_resource type="CircleShape2D" id="CircleShape2D_y57wy"]
 radius = 370.228
 
-[node name="player" type="CharacterBody2D"]
+[sub_resource type="CircleShape2D" id="CircleShape2D_2a14q"]
+radius = 50.0
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_kj5qo"]
+radius = 12.0
+
+[sub_resource type="Theme" id="Theme_n1wo2"]
+
+[node name="player" type="CharacterBody2D" groups=["player"]]
 motion_mode = 1
 script = ExtResource("1_lm17y")
 
-[node name="Sprite2D" type="Sprite2D" parent="." groups=["player"]]
+[node name="Sprite2D" type="Sprite2D" parent="."]
 position = Vector2(-1.22979, 2.12787)
 scale = Vector2(0.0905291, 0.0776792)
 texture = ExtResource("2_vlc2l")
@@ -54,7 +66,18 @@ unique_name_in_owner = true
 wait_time = 0.075
 autostart = true
 
+[node name="TornadoTimer" type="Timer" parent="Attack"]
+unique_name_in_owner = true
+wait_time = 3.0
+autostart = true
+
+[node name="TornadoAttackTimer" type="Timer" parent="Attack/TornadoTimer"]
+unique_name_in_owner = true
+wait_time = 0.2
+autostart = true
+
 [node name="EnemyDetectionArea" type="Area2D" parent="."]
+visible = false
 collision_layer = 4
 collision_mask = 4
 monitorable = false
@@ -62,10 +85,92 @@ monitorable = false
 [node name="CollisionShape2D" type="CollisionShape2D" parent="EnemyDetectionArea"]
 shape = SubResource("CircleShape2D_y57wy")
 
+[node name="JavelinBase" type="Node2D" parent="."]
+unique_name_in_owner = true
+
+[node name="GrabArea" type="Area2D" parent="."]
+collision_layer = 0
+collision_mask = 8
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="GrabArea"]
+shape = SubResource("CircleShape2D_2a14q")
+
+[node name="CollectArea" type="Area2D" parent="."]
+collision_layer = 0
+collision_mask = 8
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="CollectArea"]
+shape = SubResource("CircleShape2D_kj5qo")
+
+[node name="GUILayer" type="CanvasLayer" parent="."]
+
+[node name="GUI" type="Control" parent="GUILayer"]
+layout_mode = 3
+anchors_preset = 0
+offset_right = 640.0
+offset_bottom = 360.0
+
+[node name="ExperienceBar" type="TextureProgressBar" parent="GUILayer/GUI"]
+unique_name_in_owner = true
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 40.0
+texture_under = ExtResource("4_1hkix")
+texture_progress = ExtResource("5_q3hue")
+
+[node name="lbl_level" type="Label" parent="GUILayer/GUI/ExperienceBar"]
+unique_name_in_owner = true
+layout_mode = 0
+offset_left = 540.0
+offset_right = 640.0
+offset_bottom = 20.0
+theme = SubResource("Theme_n1wo2")
+theme_override_fonts/font = ExtResource("6_rhnh7")
+theme_override_font_sizes/font_size = 16
+text = "Level: 1"
+horizontal_alignment = 1
+vertical_alignment = 2
+
+[node name="LevelUp" type="Panel" parent="GUILayer/GUI"]
+unique_name_in_owner = true
+process_mode = 2
+visible = false
+layout_mode = 0
+offset_left = 800.0
+offset_top = 50.0
+offset_right = 1000.0
+offset_bottom = 300.0
+
+[node name="lbl_LevelUp" type="Label" parent="GUILayer/GUI/LevelUp"]
+layout_mode = 0
+offset_right = 200.0
+offset_bottom = 50.0
+theme_override_fonts/font = ExtResource("6_rhnh7")
+text = "Level Up !"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="UpgradeOptions" type="VBoxContainer" parent="GUILayer/GUI/LevelUp"]
+unique_name_in_owner = true
+layout_mode = 0
+offset_left = 10.0
+offset_top = 50.0
+offset_right = 190.0
+offset_bottom = 100.0
+
+[node name="snd_levelUp" type="AudioStreamPlayer" parent="GUILayer/GUI/LevelUp"]
+unique_name_in_owner = true
+stream = ExtResource("7_0640v")
+volume_db = -20.0
+
 [connection signal="hurt" from="hurtbox" to="." method="_on_hurtbox_hurt"]
 [connection signal="timeout" from="Attack/IceSpearTimer" to="." method="_on_ice_spear_timer_timeout"]
 [connection signal="timeout" from="Attack/IceSpearTimer/IceSpearAttackTimer" to="." method="_on_ice_spear_attack_timer_timeout"]
+[connection signal="timeout" from="Attack/TornadoTimer" to="." method="_on_tornado_timer_timeout"]
+[connection signal="timeout" from="Attack/TornadoTimer/TornadoAttackTimer" to="." method="_on_tornado_attack_timer_timeout"]
 [connection signal="body_entered" from="EnemyDetectionArea" to="." method="_on_enemy_detection_area_body_entered"]
 [connection signal="body_exited" from="EnemyDetectionArea" to="." method="_on_enemy_detection_area_body_exited"]
+[connection signal="area_entered" from="GrabArea" to="." method="_on_grab_area_area_entered"]
+[connection signal="area_entered" from="CollectArea" to="." method="_on_collect_area_area_entered"]
 
 [editable path="hurtbox"]
